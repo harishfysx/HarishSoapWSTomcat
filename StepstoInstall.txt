@@ -1,0 +1,73 @@
+/*
+Certe ORIENTAL SCHEMA and load data in db2
+*/
+
+/*
+Create Resournce in tomcat conf/context.xml
+*/
+
+<Resource auth="Container"
+	driverClassName="com.ibm.db2.jcc.DB2Driver"
+	name="jdbc/CHARAKA"
+	password="Db2pswd"
+	username="bpmadmin"
+	type="javax.sql.DataSource"
+	url="jdbc:db2://192.168.2.140:50000/CHARAKA"/>
+	
+/*
+Add the reference in Java project web.xml
+*/
+<resource-ref>
+    		<res-ref-name>jdbc/CHARAKA</res-ref-name>
+    		<res-type>javax.sql.DataSource</res-type>
+    		<res-auth>Container</res-auth>
+ </resource-ref>
+ 
+ /*
+ To secure the web application add following in web.xml
+ */
+
+        <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>OrientalWS</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>BPMStudents</role-name>
+        </auth-constraint>
+
+    </security-constraint>
+
+    <!-- LOGIN CONFIGURATION-->
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+	
+/*
+Add following in server.xml under 
+
+
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
+		
+		in <Realm className="org.apache.catalina.realm.LockOutRealm">
+				</Realm>
+
+*/
+
+  <Realm  className="org.apache.catalina.realm.JNDIRealm"
+                debug="99"
+                connectionURL="ldap://192.168.2.40:389"
+                connectionName="cn=manager,dc=harishfysx,dc=bpm"
+                connectionPassword="secret"
+                userBase="ou=Users,domainName=harishfysx.bpm,o=domains,dc=harishfysx,dc=bpm"
+                userSearch="(uid={0})"
+                userSubtree="false"
+                roleBase="ou=Groups,domainName=harishfysx.bpm,o=domains,dc=harishfysx,dc=bpm"
+                roleName="cn"
+                roleSearch="(Member={0})"
+                roleSubtree="true"
+                />
+
+
+
+      </Realm>
